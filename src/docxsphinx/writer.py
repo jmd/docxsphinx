@@ -24,12 +24,11 @@ from docx import Document
 from docutils import nodes, writers
 
 import logging
-logging.basicConfig(
-    filename='docx.log',
-    filemode='w',
-    level=logging.INFO,
-    format="%(asctime)-15s  %(message)s"
-)
+root_logger = logging.getLogger()
+logging_handler = logging.FileHandler('docx.log', 'w', 'utf-8')
+logging_handler.setFormatter(logging.Formatter('%(asctime)-15s  %(message)s'))
+root_logger.addHandler(logging_handler)
+root_logger.setLevel(logging.INFO)
 logger = logging.getLogger('docx')
 
 
