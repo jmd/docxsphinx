@@ -70,24 +70,27 @@ class DocxWriter(writers.Writer):
     settings_defaults = {}
 
     output = None
-    template_dir = "NO"
 
     def __init__(self, builder):
         writers.Writer.__init__(self)
         self.builder = builder
-        self.template_setup()  # setup before call almost docx methods.
+        dotx = self.builder.config['docx_template']
+        template_path = None
+        if dotx:
+            template_path = self.get_template_path(dotx)
+            if template_path:
+                logger.info('Using template file {}'.format(dotx))
+            else:
+                logger.error('Failed to find template file {}'.format(dotx))
 
-        if self.template_dir == "NO":
-            dc = Document()
-        else:
-            dc = Document(os.path.join('source', self.template_dir))
+        dc = Document(template_path)
         self.docx_container = dc
 
-    def template_setup(self):
-        dotx = self.builder.config['docx_template']
-        if dotx:
-            logger.info("MK using template {}".format(dotx))
-            self.template_dir = dotx
+    def get_template_path(self, file_name):
+        for template_dir in self.builder.config.templates_path:
+            template_path = os.path.join(self.builder.confdir, template_dir, file_name)
+            if os.path.exists(template_path):
+                return template_path
 
     def save(self, filename):
         self.docx_container.save(filename)
