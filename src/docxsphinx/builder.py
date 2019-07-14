@@ -65,18 +65,10 @@ class DocxBuilder(Builder):
 
     def write(self, *ignored):
         docnames = self.env.all_docs
-
-        self.info(bold('preparing documents... '), nonl=True)
         self.prepare_writing(docnames)
-        self.info('done')
-
-        self.info(bold('assembling single document... '), nonl=True)
         doctree = self.assemble_doctree()
-        self.info()
-        self.info(bold('writing... '), nonl=True)
         docname = "%s-%s" % (self.config.project, self.config.version)
         self.write_doc(docname, doctree)
-        self.info('done')
 
     def write_doc(self, docname, doctree):
         destination = StringOutput(encoding='utf-8')
