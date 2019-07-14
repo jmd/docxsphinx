@@ -37,7 +37,7 @@ setup(
      package_data={'': ['buildout.cfg']},
      include_package_data=True,
      install_requires=[
-        'sphinx>=1.6.2,<2.0',
+        'Sphinx',
         'python-docx',
      ],
      extras_require=dict(
