@@ -54,6 +54,7 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
+.pytest_cache/
 
 # Translations
 *.mo
@@ -101,4 +102,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# MyPy cache
+**/.mypy_cache/
 
