@@ -156,6 +156,23 @@ class DocxTranslator(nodes.NodeVisitor):
         self.current_paragraph = None
         "The current paragraph that text is being added to."
 
+    def resolve_style(self, style_name, style_type):
+        """
+        Check if the style style_name exists in the document and its type is
+        style_type.
+        
+        If not output a warning and return None, otherwise return the input style_name.
+        """
+        if style_name is None:
+            return None
+        if not style_name in self.docx_container.styles:
+            logger.warning('Style "{}" does not exist in the document'.format(style_name))
+            return None
+        if self.docx_container.styles[style_name].type != style_type:
+            logger.warning('Style "{}" does not match the required type {}'.format(style_name, style_type))
+            return None
+        return style_name
+
     def add_text(self, text):
         dprint()
         textrun = self.current_paragraph.add_run(text)
@@ -597,14 +614,7 @@ class DocxTranslator(nodes.NodeVisitor):
     def visit_table(self, node):
         dprint()
 
-        style = self.current_state.table_style
-        try:
-            # Check whether the style is part of the document.
-            self.docx_container.styles.get_style_id(style, WD_STYLE_TYPE.TABLE)
-        except KeyError as exc:
-            msg = 'looks like style "{}" is missing\n{}\n using no style'.format(style, repr(exc))
-            logger.warning(msg)
-            style = None
+        style = self.resolve_style(self.current_state.table_style,  WD_STYLE_TYPE.TABLE)
 
         # Columns are added when a colspec is visited.
 
@@ -690,13 +700,7 @@ class DocxTranslator(nodes.NodeVisitor):
         # paragraph, so that would add another paragraph. That is
         # prevented if current_paragraph is an empty List paragraph.
         style = 'List Bullet' if self.list_level < 2 else 'List Bullet {}'.format(self.list_level)
-        try:
-            # Check whether the style is part of the document.
-            self.docx_container.styles.get_style_id(style, WD_STYLE_TYPE.PARAGRAPH)
-        except KeyError as exc:
-            msg = 'looks like style "{}" is missing\n{}\n using no style'.format(style, repr(exc))
-            logger.warning(msg)
-            style = None
+        style = self.resolve_style(style,  WD_STYLE_TYPE.PARAGRAPH)
 
         # Bulleted lists do not seem to respect left_indent, so need to use another style.
         if self.desc_level:
@@ -868,15 +872,7 @@ class DocxTranslator(nodes.NodeVisitor):
 
         # Unlike with Lists, there will not be a visit to paragraph in a
         # literal block, so we *must* create the paragraph here.
-        style = 'MacroText'
-        try:
-            # Check whether the style is part of the document.
-            self.docx_container.styles.get_style_id(style, WD_STYLE_TYPE.PARAGRAPH)
-        except KeyError as exc:
-            msg = 'looks like style "{}" is missing\n{}\n using no style'.format(style, repr(exc))
-            logger.warning(msg)
-            style = None
-
+        style = self.resolve_style('MacroText',  WD_STYLE_TYPE.PARAGRAPH)
         self.current_paragraph = self.current_state.location.add_paragraph(style=style)
         self.current_paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
