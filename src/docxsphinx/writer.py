@@ -23,13 +23,9 @@ from docx import Document
 
 from docutils import nodes, writers
 
-import logging
-logging.basicConfig(
-    filename='docx.log',
-    filemode='w',
-    level=logging.INFO,
-    format="%(asctime)-15s  %(message)s"
-)
+from sphinx.util import logging
+
+
 logger = logging.getLogger('docx')
 
 
