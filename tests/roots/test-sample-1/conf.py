@@ -28,7 +28,7 @@ import sys, os
 extensions = ['docxsphinx']
 
 # 'docx_template' need *.docx or *.dotx template file name. default is None.
-docx_template = 'template.docx'
+#docx_template = 'template.docx'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

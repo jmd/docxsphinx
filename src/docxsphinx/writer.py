@@ -141,7 +141,7 @@ class DocxTranslator(nodes.NodeVisitor):
         # TODO: And what about sectionlevel?
         self.sectionlevel = 0
 
-        self.table_style_default = 'Grid Table 4'
+        self.table_style_default = 'Table Grid'
         self.in_literal_block = False
         self.strong = False
         self.emphasis = False
@@ -299,7 +299,7 @@ class DocxTranslator(nodes.NodeVisitor):
     def visit_desc_signature(self, node):
         dprint()
         curloc = self.current_state.location
-        self.current_paragraph = curloc.add_paragraph(style='MacroText')
+        self.current_paragraph = curloc.add_paragraph(style='macro')
         self.current_paragraph.paragraph_format.left_indent = Cm(self.desc_level - 1)
 
     def depart_desc_signature(self, node):
@@ -872,7 +872,7 @@ class DocxTranslator(nodes.NodeVisitor):
 
         # Unlike with Lists, there will not be a visit to paragraph in a
         # literal block, so we *must* create the paragraph here.
-        style = self.resolve_style('MacroText',  WD_STYLE_TYPE.PARAGRAPH)
+        style = self.resolve_style('macro',  WD_STYLE_TYPE.PARAGRAPH)
         self.current_paragraph = self.current_state.location.add_paragraph(style=style)
         self.current_paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
