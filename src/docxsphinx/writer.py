@@ -24,6 +24,7 @@ from docx import Document
 from docutils import nodes, writers
 
 from sphinx.util import logging
+from docxsphinx import styles
 
 
 logger = logging.getLogger('docx')
@@ -125,6 +126,8 @@ class DocxTranslator(nodes.NodeVisitor):
         self.docx_container = docx_container
         nodes.NodeVisitor.__init__(self, document)
 
+        self.literal_font = styles.literal_font
+
         # TODO: Perhaps move the list_style into DocxState.
         # However, it should still be a list, and not a separate state,
         # because nested lists are not really nested.
@@ -145,6 +148,7 @@ class DocxTranslator(nodes.NodeVisitor):
         self.in_literal_block = False
         self.strong = False
         self.emphasis = False
+        self.literal = False
 
         self.current_state = DocxState(location=self.docx_container)
         self.current_state.table_style = self.table_style_default
@@ -180,6 +184,8 @@ class DocxTranslator(nodes.NodeVisitor):
             textrun.bold = True
         if self.emphasis:
             textrun.italic = True
+        if self.literal:
+            textrun.font.name = self.literal_font
 
     def new_state(self, location):
         dprint()
@@ -921,7 +927,7 @@ class DocxTranslator(nodes.NodeVisitor):
 
         curloc = self.current_state.location
 
-        if 'List' in self.current_paragraph.style.name and not self.current_paragraph.text:
+        if self.current_paragraph and 'List' in self.current_paragraph.style.name and not self.current_paragraph.text:
             # This is the first paragraph in a list item, so do not create another one.
             pass
         elif self.desc_type and self.desc_type[-1] == 'field':
@@ -1039,11 +1045,11 @@ class DocxTranslator(nodes.NodeVisitor):
 
     def visit_literal(self, node):
         dprint()
-        # self.add_text('``')
+        self.literal = True
 
     def depart_literal(self, node):
         dprint()
-        # self.add_text('``')
+        self.literal = False
 
     def visit_subscript(self, node):
         dprint()

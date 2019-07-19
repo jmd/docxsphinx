@@ -1,0 +1,1 @@
+Some *italic text*, some **bold text** and some ``literal`` and back to normal.

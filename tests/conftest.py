@@ -7,6 +7,9 @@ from sphinx.util.logging import NAMESPACE
 
 pytest_plugins = 'sphinx.testing.fixtures'
 
+# Enables assert introspection for docxsphinx.testing.util module
+pytest.register_assert_rewrite('docxsphinx.testing.util')
+
 
 @pytest.fixture(scope='session')
 def rootdir():
